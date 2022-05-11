@@ -1,3 +1,12 @@
+# Version 1.0.2
+## Changes from 1.0.0
+
+_cursor()_ fix (1.0.1)
+- Fixes the gmst.input troubles for loading curosors and gmst.loadlock
+
+_setupanim(x, y)_ change (1.0.2)
+- Adds a default value to y (1) in the case that it is undefined
+
 # Inputts
 [Inputts](https://github.com/penamona/inputts) is a *“kinda game engine”* I made to make html text adventure games. It has things that I think a text adventure game would be nice with. It is currently in a single html file but I highly recommend creating an external js file for the actual game thing (more on that later).
 
