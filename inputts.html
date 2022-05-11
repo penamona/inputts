@@ -18,7 +18,7 @@
         .container{display:inline-block;text-decoration: inherit;}
         img{width:50vw;}
         video{width:50vw;}
-        button{color:var(--main);font: inherit;background-color: var(--accent);border: 0px;border-radius: 0px;}
+        button{color:var(--main);font: inherit;background-color: var(--accent);border: 0px;border-radius: 0px;display:inline;vertical-align: top;}
         .arrow{display:inline-block;vertical-align: top;}
         ::-webkit-scrollbar {width: 10px;}
         ::-webkit-scrollbar-track {background: var(--main);}
@@ -50,9 +50,9 @@
         var lineno = {num:0,img:0,vid:0,aud:0};
         var cssvar = document.querySelector(':root');
         var keysPressed = {};
-        var textAnim = {array: [null], anims: 0};
+        var textAnim = {array: [undefined], anims: 0};
         var updwntxt = {no: lineno.num + 1, store: "", fi: true};
-        var crsrstate = true;
+        var crsrstate = true; 
         var loadstate = 0;
         var loadedst = false;
         var customcursor = {on:"&nbsp;",off:"&nbsp;"};
@@ -64,6 +64,7 @@
             loadlock: true,
             lights: true,
             enterdef: true,
+            updwntxtb: true,
             pOutpt: 1,
             cursor: 1,
             cursorRate: 300,
@@ -271,7 +272,7 @@
             lineno.img++;
             return "<img id=\"imgln-"+(lineno.num+1)+c+"\" src=\""+link+"\">";
         }
-        function outptv(link, text, loop, btn) {
+        function outptv(link, btn, text, loop) {
             var c = "";
             if (lineno.vid > 0) {c = "-" + lineno.vid}
             var x = "&nbsp;";
@@ -281,15 +282,15 @@
                 z = " loop";
             }
             if (btn == true) {
-                x = "<br><button onclick=\"playvid("+(lineno.num+1)+c+")\").play()\">Play</button>&nbsp;";
+                x = "<button onclick=\"playvid(\'"+(lineno.num+1)+c+"\').play()\">Play</button>&nbsp;";
             }
             if (text != undefined) {
                 y = text;
             }
             lineno.vid++;
-            return "<video id=\"vidln-"+(lineno.num+1)+c+"\" src=\""+link+"\""+z+"></video>" + x + y;
+            return "<video id=\"vidln-"+(lineno.num+1)+c+"\""+z+"><source src=\""+link+"\"></video>" + x + y;
         }
-        function outpta(link, text, loop, btn) {
+        function outpta(link, btn, text, loop) {
             var c = "";
             if (lineno.aud > 0) {c = "-" + lineno.aud}
             var x = "&nbsp;";
@@ -299,23 +300,27 @@
                 z = " loop";
             }
             if (btn == true) {
-                x = "<button onclick=\"playaud("+(lineno.num+1)+c+")\").play()\">Play</button>&nbsp;";
+                x = "<button onclick=\"playaud(\'"+(lineno.num+1)+c+"\').play()\">Play</button>&nbsp;";
             }
             if (text != undefined) {
                 y = text;
             }
             lineno.aud++;
-            return "<audio id=\"audln-"+(lineno.num+1)+c+"\" src=\""+link+"\""+z+"></audio>" + x + y;
+            return "<audio id=\"audln-"+(lineno.num+1)+c+"\""+z+"><source src=\""+link+"\"></audio>" + x + y;
         }
         //Controls
         //x = Line No.
         //Image
-        function correctimg(x) {
+        function correctimg(x, yw, yh) {
+            var y1;
+            var y2;
+            if (yw == undefined || yw == null || yw.trim() == "" || nbspspc(yw).trim() == "") {y1 = "50vw"} else {y1 = yw;}
+            if (yh == undefined || yh == null || yh.trim() == "" || nbspspc(yh).trim() == "") {y2 = "60vh"} else {y2 = yh;}
             if (document.getElementById("imgln-"+x).clientHeight > document.getElementById("imgln-"+x).clientWidth) {
-                document.getElementById("imgln-"+x).style.height = "60vh";
+                document.getElementById("imgln-"+x).style.height = y2;
                 document.getElementById("imgln-"+x).style.width = "auto";
             } else {
-                document.getElementById("imgln-"+x).style.width = "50vw";
+                document.getElementById("imgln-"+x).style.width = y1;
                 document.getElementById("imgln-"+x).style.height = "auto";
             }
         }
@@ -330,6 +335,12 @@
         }
         function changeIcon(x) {
             ficon.href = x+"";
+        }
+        function changeheighti(x, y) {
+            document.getElementById("imgln-"+x).style.height = y;
+        }
+        function changewidthi(x, y) {
+            document.getElementById("imgln-"+x).style.width = y;
         }
         //Audio
         function playaud(x) {
@@ -348,7 +359,7 @@
             return document.getElementById("audln-"+x).duration;
         }
         function changesrca(x, y) {
-            document.getElementById("audln-"+x).src = y;
+            document.getElementById("audln-"+x).setAttribute("src", y);
         }
         //Video
         function playvid(x) {
@@ -366,17 +377,27 @@
         function lengthvid(x) {
             return document.getElementById("vidln-"+x).duration;
         }
-        function correctvid(x) {
+        function correctvid(x, yw, yh) {
+            var y1;
+            var y2;
+            if (yh == undefined || yh == null || yh.trim() == "" || nbspspc(yh).trim() == "") {y2 = "60vh"} else {y2 = yh;}
+            if (yw == undefined || yw == null || yw.trim() == "" || nbspspc(yw).trim() == "") {y1 = "50vw"} else {y1 = yw;}
             if (document.getElementById("vidln-"+x).clientHeight > document.getElementById("vidln-"+x).clientWidth) {
-                document.getElementById("vidln-"+x).style.height = "60vh";
+                document.getElementById("vidln-"+x).style.height = y2;
                 document.getElementById("vidln-"+x).style.width = "auto";
             } else {
-                document.getElementById("vidln-"+x).style.width = "50vw";
+                document.getElementById("vidln-"+x).style.width = y1;
                 document.getElementById("vidln-"+x).style.height = "auto";
             }
         }
         function changesrcv(x, y) {
-            document.getElementById("vidln-"+x).src = y;
+            document.getElementById("vidln-"+x).setAttribute("src", y);
+        }
+        function changeheightv(x, y) {
+            document.getElementById("imgln-"+x).style.height = y;
+        }
+        function changewidthv(x, y) {
+            document.getElementById("imgln-"+x).style.width = y;
         }
 
         //Reset
@@ -385,7 +406,7 @@
             contnt = [];
             otptbx.innerHTML = "";
             updwntxt = {no: lineno.num + 1, store: "", fi: true};
-            textAnim = {array: [null], anims: 0};
+            resetAnim();
         }
         function resetAllFormat() {
             gmst.bodybold = false;
@@ -418,7 +439,10 @@
                 gmst.lights = true;
             }
         }
-        
+        function resetAnim() {
+            textAnim = {array: [undefined], anims: 0};
+        }
+
         //Text
         function getInnerText(x) {
             return document.getElementById("txtln-"+x).innerHTML;
@@ -1078,26 +1102,28 @@
         $(window).resize(function() {
             document.getElementById("outptbx").style.height = "calc(100vh - "+document.getElementById("textbox").clientHeight+"px - 12px)";
         });
-        function arrowtxt(up) {    
-            if (up == true) {
-                updwntxt.no--;
-            } else {
-                updwntxt.no++;
-            }
-            if (updwntxt.no <= 0) {updwntxt.no = 1}
-            if (updwntxt.no > lineno.num + 1) {updwntxt.no = lineno.num + 1}
-            if (updwntxt.no < lineno.num + 1) {
-                if (updwntxt.fi == true) {
-                    updwntxt.fi = false;
-                    updwntxt.store = inptbx.innerHTML;
+        function arrowtxt(up) {
+            if (gmst.updwntxtb == true) {                
+                if (up == true) {
+                    updwntxt.no--;
+                } else {
+                    updwntxt.no++;
                 }
-                cinpt(getInnerText(updwntxt.no));
-            } else {
-                if (updwntxt.fi == false) {
-                    updwntxt.fi = true;
-                    cinpt(updwntxt.store);
-                    updwntxt.store = "";
-                } 
+                if (updwntxt.no <= 0) {updwntxt.no = 1}
+                if (updwntxt.no > lineno.num + 1) {updwntxt.no = lineno.num + 1}
+                if (updwntxt.no < lineno.num + 1) {
+                    if (updwntxt.fi == true) {
+                        updwntxt.fi = false;
+                        updwntxt.store = inptbx.innerHTML;
+                    }
+                    cinpt(getInnerText(updwntxt.no));
+                } else {
+                    if (updwntxt.fi == false) {
+                        updwntxt.fi = true;
+                        cinpt(updwntxt.store);
+                        updwntxt.store = "";
+                    } 
+                }
             }
         }
 
