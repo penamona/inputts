@@ -1106,11 +1106,6 @@
                 if (gmst.cursor == -1) {
                     if (loadedst == false) {
                         loadedst = true;
-                        if (gmst.loadlock == true) {
-                            if (gmst.input == true) {
-                                gmst.input = false;
-                            }
-                        }
                     }
                     if (loadstate == 0) {
                         pntr.innerHTML = ".";
@@ -1125,14 +1120,18 @@
                     if (loadstate >= 4) {
                         loadstate = 0;
                     }
+                    if (gmst.loadlock == true) {
+                        if (gmst.input == true) {
+                            gmst.input = false;
+                        }
+                    } else {
+                        if (gmst.input == false) {
+                            gmst.input = true;
+                        }
+                    }
                 } else if (gmst.cursor == -2) {
                     if (loadedst == false) {
                         loadedst = true;
-                        if (gmst.loadlock == true) {
-                            if (gmst.input == true) {
-                                gmst.input = false;
-                            }
-                        }
                     }
                     if (loadstate == 0) {
                         pntr.innerHTML = "|";
@@ -1146,6 +1145,15 @@
                     loadstate++;
                     if (loadstate >= 4) {
                         loadstate = 0;
+                    }
+                    if (gmst.loadlock == true) {
+                        if (gmst.input == true) {
+                            gmst.input = false;
+                        }
+                    } else {
+                        if (gmst.input == false) {
+                            gmst.input = true;
+                        }
                     }
                 } else {
                     if (loadedst == true) {
