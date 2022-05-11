@@ -27,6 +27,8 @@ The entire html that you see at first:
 ```
 ## Javascript
 The javascript is a bit messy and unconventional (i’m kinda new here) so if you’re struggling to understand it or you don’t want to go through all of that code, you can read this. This already has jquery and google fonts plugged in.
+> Reminder: Javascript does not wait for a function to finish before executing the code below. Time it well.
+
 > Recommended Additional Resources
 > [W3Schools Javascript](https://www.w3schools.com/js/default.asp) 
 > [Strings](https://www.w3schools.com/js/js_strings.asp)
