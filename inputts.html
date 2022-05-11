@@ -232,6 +232,7 @@
             scrldwn();
         }
         function setupanim (x, y) {
+            if (y == undefined) {y = 1}
             textAnim.array[textAnim.array.length] = {str: x, sec: y, counter: 1};
             textAnim.anims++;
         }
