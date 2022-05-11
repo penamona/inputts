@@ -1,0 +1,1199 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title id="title">Adventure</title>
+    <link rel="icon" href="" id="icon">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <style>
+        :root{--main:black;--accent: white}
+        body{font-family: 'Courier New', Courier, monospace}
+        body{background-color: var(--main);margin: 0px;color:var(--accent);font-size:3vh;visibility: hidden;}
+        #textbox{border: 1px solid var(--accent);position:fixed;width:calc(100vw - 12px);padding: 5px;bottom:0px; overflow-y: scroll;overflow-x: hidden;word-wrap: break-word;max-height: 50vh;text-decoration: inherit;}
+        #outptbx{border: 1px solid var(--accent);position:fixed;width:calc(100vw - 12px);padding: 5px;top:0px; height: calc(100vh - 24px - 3vh);border-bottom: none; overflow-y: scroll;overflow-x: hidden;text-decoration: inherit;}
+        .txt{width: calc(95vw - 12px); display:inline-block;word-wrap: break-word;text-decoration: inherit;}
+        .container{display:inline-block;text-decoration: inherit;}
+        img{width:50vw;}
+        video{width:50vw;}
+        button{color:var(--main);font: inherit;background-color: var(--accent);border: 0px;border-radius: 0px;}
+        .arrow{display:inline-block;vertical-align: top;}
+        ::-webkit-scrollbar {width: 10px;}
+        ::-webkit-scrollbar-track {background: var(--main);}
+        ::-webkit-scrollbar-thumb {background: var(--accent);}
+    </style>
+</head>
+
+<body id="body" onload="loaded()">
+    <div id="outptbx"></div>
+    <div id="textbox">
+        <div class="arrow">></div>
+        <div class="txt"><span id="inpt"></span><span id="cursor">&nbsp;</span></div>
+    </div>
+
+    <script>
+        //Delay: setTimeout(() => { [code] }, [delay in ms]);
+
+        //Initialization
+        //Change Output Box Height
+        document.getElementById("outptbx").style.height = "calc(100vh - "+document.getElementById("textbox").clientHeight+"px - 11px)";
+        //Variables
+        const inptbx = document.getElementById("inpt");
+        const otptbx = document.getElementById("outptbx");
+        const bdy = document.getElementById("body");
+        const titl = document.getElementById("title");
+        const ficon = document.getElementById("icon");
+        const pntr = document.getElementById("cursor");
+        var contnt = [];
+        var lineno = {num:0,img:0,vid:0,aud:0};
+        var cssvar = document.querySelector(':root');
+        var keysPressed = {};
+        var textAnim = {array: [null], anims: 0};
+        var updwntxt = {no: lineno.num + 1, store: "", fi: true};
+        var crsrstate = true;
+        var loadstate = 0;
+        var loadedst = false;
+        var customcursor = {on:"&nbsp;",off:"&nbsp;"};
+        //States
+        var gmst = {
+            input: true,
+            eyesopen: false,
+            enterblank: false,
+            loadlock: true,
+            lights: true,
+            enterdef: true,
+            pOutpt: 1,
+            cursor: 1,
+            cursorRate: 300,
+            bodybold: false,
+            bodyital: false,
+            bodyundr: false,
+            inptbold: false,
+            inptital: false,
+            inptundr: false,
+            otptbold: false,
+            otptital: false,
+            otptundr: false,
+        }
+
+        //Body On Load
+        function loaded() {
+            cinpt();
+            bdy.style.visibility = "visible";
+        }
+
+        //Enter
+        function pEnter() {
+            if (gmst.enterdef == true) {
+                var c = inptbx.innerHTML;
+                cinpt();
+                outpt(c, gmst.pOutpt);
+                updwntxt = {no: lineno.num + 1, store: "", fi: true};
+            } else {
+                //custom code here
+            }
+        }
+
+        //Output Box Scroll
+        function scrldwn() {
+            otptbx.scrollTop = otptbx.scrollHeight;
+        }
+        function scrlup() {
+            otptbx.scrollTop = -1 * otptbx.scrollHeight;
+        }
+        
+        //Outputs
+        //<div class="arrow">></div><div class="txt"></div>
+        //otptbx.scrollTop = otptbx.scrollHeight;
+        function outpt(x, y, z) {
+            lineno.img = 0;
+            lineno.vid = 0;
+            lineno.aud = 0;
+            lineno.num++;
+            if (y == undefined) {y = 6}
+            switch(y){
+                case 1:
+                    contnt[lineno.num] = "> " + x;
+                    otptbx.innerHTML+= "<div class=\"container\" id=\"line-"+lineno.num+"\"><div class=\"arrow\" id=\"arwln-"+lineno.num+"\">>&nbsp;</div><div class=\"txt\" id=\"txtln-"+lineno.num+"\">"+x+"</div></div><br>";
+                    break;
+                case 2:
+                    contnt[lineno.num] = "< " + x;
+                    otptbx.innerHTML+="<div class=\"container\" id=\"line-"+lineno.num+"\"><div class=\"arrow\" id=\"arwln-"+lineno.num+"\"><&nbsp;</div><div class=\"txt\" id=\"txtln-"+lineno.num+"\">"+x+"</div></div><br>";
+                    break;
+                case 3:
+                    contnt[lineno.num] = "$ " + x;
+                    otptbx.innerHTML+="<div class=\"container\" id=\"line-"+lineno.num+"\"><div class=\"arrow\" id=\"arwln-"+lineno.num+"\">$&nbsp;</div><div class=\"txt\" id=\"txtln-"+lineno.num+"\">"+x+"</div></div><br>";
+                    break;
+                case 4:
+                    contnt[lineno.num] = "- " + x;
+                    otptbx.innerHTML+="<div class=\"container\" id=\"line-"+lineno.num+"\"><div class=\"arrow\" id=\"arwln-"+lineno.num+"\">-&nbsp;</div><div class=\"txt\" id=\"txtln-"+lineno.num+"\">"+x+"</div></div><br>";
+                    break;    
+                case 5:
+                    contnt[lineno.num] = "= " + x;
+                    otptbx.innerHTML+="<div class=\"container\" id=\"line-"+lineno.num+"\"><div class=\"arrow\" id=\"arwln-"+lineno.num+"\">=&nbsp;</div><div class=\"txt\" id=\"txtln-"+lineno.num+"\">"+x+"</div></div><br>";
+                    break;
+                case 6:
+                    contnt[lineno.num] = x;
+                    otptbx.innerHTML+="<div class=\"container\" id=\"line-"+lineno.num+"\"><div class=\"txt\" id=\"txtln-"+lineno.num+"\" style=\"width:calc(100vw - 24px)\">"+x+"</div></div><br>";
+                    break;
+                case 7:
+                    contnt[lineno.num] = "  " + x;
+                    otptbx.innerHTML+="<div class=\"container\" id=\"line-"+lineno.num+"\">&nbsp;&nbsp;</div><div class=\"txt\" id=\"txtln-"+lineno.num+"\">"+x+"</div></div><br>";
+                    break;
+                case 8:
+                    var c;
+                    if (z == undefined) {
+                        c = lineno.num;
+                    } else {
+                        c = z;
+                    }
+                    if (c <= 9) {
+                        contnt[lineno.num] = " " + c + " " + x;
+                        otptbx.innerHTML+="<div class=\"container\" id=\"line-"+lineno.num+"\"><div class=\"arrow\" id=\"arwln-"+lineno.num+"\">&nbsp;"+c+"&nbsp;</div><div class=\"txt\" id=\"txtln-"+lineno.num+"\" style=\"width: calc(94vw - 12px);\">"+x+"</div></div><br>";
+                    } else if (c <= 99){
+                        contnt[lineno.num] = c + " " + x;
+                        otptbx.innerHTML+="<div class=\"container\" id=\"line-"+lineno.num+"\"><div class=\"arrow\" id=\"arwln-"+lineno.num+"\">"+c+"&nbsp;</div><div class=\"txt\" id=\"txtln-"+lineno.num+"\" style=\"width: calc(94vw - 12px);\">"+x+"</div></div><br>";
+                    } else {
+                        contnt[lineno.num] = "9! " + x;
+                        otptbx.innerHTML+="<div class=\"container\" id=\"line-"+lineno.num+"\"><div class=\"arrow\" id=\"arwln-"+lineno.num+"\">9!&nbsp;</div><div class=\"txt\" id=\"txtln-"+lineno.num+"\" style=\"width: calc(94vw - 12px);\">"+x+"</div></div><br>";
+                    }
+                    break;
+                case 9:
+                    var c = "";
+                    if (z.length == 0) {
+                        c = "&nbsp;&nbsp;&nbsp;";
+                    } else if (z.length == 1) {
+                        c = z+"&nbsp;"+"&nbsp;";
+                    } else if (z.length == 2) {
+                        c = z+"&nbsp;";
+                    } else if (z.length > 2) {
+                        c = z.substring(0, 2)+"&nbsp;";
+                    }
+                    contnt[lineno.num] = c + x;
+                    otptbx.innerHTML+= "<div class=\"container\" id=\"line-"+lineno.num+"\"><div class=\"arrow\" id=\"arwln-"+lineno.num+"\">"+c+"</div><div class=\"txt\" id=\"txtln-"+lineno.num+"\" style=\"width: calc(94vw - 12px);\">"+x+"</div></div><br>";
+            }
+            scrldwn();
+        }
+        function outpttxt(x, y, z) {
+            var l = lineno.num + 1;
+            if (y == undefined) {y = 6}
+            switch(y){
+                case 1:
+                    return "<div class=\"container\" id=\"line-"+l+"\"><div class=\"arrow\" id=\"arwln-"+l+"\">>&nbsp;</div><div class=\"txt\" id=\"txtln-"+l+"\">"+x+"</div></div><br>";
+                    break;
+                case 2:
+                    return"<div class=\"container\" id=\"line-"+l+"\"><div class=\"arrow\" id=\"arwln-"+l+"\"><&nbsp;</div><div class=\"txt\" id=\"txtln-"+l+"\">"+x+"</div></div><br>";
+                    break;
+                case 3:
+                    return"<div class=\"container\" id=\"line-"+l+"\"><div class=\"arrow\" id=\"arwln-"+l+"\">$&nbsp;</div><div class=\"txt\" id=\"txtln-"+l+"\">"+x+"</div></div><br>";
+                    break;
+                case 4:
+                    return"<div class=\"container\" id=\"line-"+l+"\"><div class=\"arrow\" id=\"arwln-"+l+"\">-&nbsp;</div><div class=\"txt\" id=\"txtln-"+l+"\">"+x+"</div></div><br>";
+                    break;    
+                case 5:
+                    return"<div class=\"container\" id=\"line-"+l+"\"><div class=\"arrow\" id=\"arwln-"+l+"\">=&nbsp;</div><div class=\"txt\" id=\"txtln-"+l+"\">"+x+"</div></div><br>";
+                    break;
+                case 6:
+                    return"<div class=\"container\" id=\"line-"+l+"\"><div class=\"txt\" id=\"txtln-"+l+"\" style=\"width:calc(100vw - 24px)\">"+x+"</div></div><br>";
+                    break;
+                case 7:
+                    return"<div class=\"container\" id=\"line-"+l+"\">&nbsp;&nbsp;</div><div class=\"txt\" id=\"txtln-"+l+"\">"+x+"</div></div><br>";
+                    break;
+                case 8:
+                    var c;
+                    if (z == undefined) {
+                        c = l;
+                    } else {
+                        c = z;
+                    }
+                    if (c <= 9) {
+                        return"<div class=\"container\" id=\"line-"+l+"\"><div class=\"arrow\" id=\"arwln-"+l+"\">&nbsp;"+c+"&nbsp;</div><div class=\"txt\" id=\"txtln-"+l+"\" style=\"width: calc(94vw - 12px);\">"+x+"</div></div><br>";
+                    } else if (c <= 99){
+                        return"<div class=\"container\" id=\"line-"+l+"\"><div class=\"arrow\" id=\"arwln-"+l+"\">"+c+"&nbsp;</div><div class=\"txt\" id=\"txtln-"+l+"\" style=\"width: calc(94vw - 12px);\">"+x+"</div></div><br>";
+                    } else {
+                        return"<div class=\"container\" id=\"line-"+l+"\"><div class=\"arrow\" id=\"arwln-"+l+"\">9!&nbsp;</div><div class=\"txt\" id=\"txtln-"+l+"\" style=\"width: calc(94vw - 12px);\">"+x+"</div></div><br>";
+                    }
+                    break;
+                case 9:
+                    var c = "";
+                    if (z.length == 0) {
+                        c = "&nbsp;&nbsp;&nbsp;";
+                    } else if (z.length == 1) {
+                        c = z+"&nbsp;"+"&nbsp;";
+                    } else if (z.length == 2) {
+                        c = z+"&nbsp;";
+                    } else if (z.length > 2) {
+                        c = z.substring(0, 2)+"&nbsp;";
+                    }
+                    return "<div class=\"container\" id=\"line-"+l+"\"><div class=\"arrow\" id=\"arwln-"+l+"\">"+c+"</div><div class=\"txt\" id=\"txtln-"+l+"\" style=\"width: calc(94vw - 12px);\">"+x+"</div></div><br>";
+            }
+            scrldwn();
+        }
+        function setupanim (x, y) {
+            textAnim.array[textAnim.array.length] = {str: x, sec: y, counter: 1};
+            textAnim.anims++;
+        }
+        function playanim(x, y, z1, z2) {
+            if (z1 == undefined) {z1 = ""}
+            if (z2 == undefined) {z2 = ""}
+            if (document.getElementById("txtln-"+y) == null) {
+                outpt("");
+                y = lineno.num;
+            }
+            document.getElementById("txtln-"+y).innerHTML = z1+textAnim.array[x].str.substring(0, textAnim.array[x].counter)+z2;
+            textAnim.array[x].counter++;
+            if (textAnim.array[x].counter == textAnim.array[x].str.length + 1) {
+                textAnim.array[x] = null;
+                textAnim.anims--;
+                if (textAnim.anims <= 0) {textAnim = {array: [null], anims: 0};}
+            } else {setTimeout(() => { playanim(x, y, z1, z2) }, (textAnim.array[x].sec * 1000));}
+        }
+
+        //Files
+        function outary(ary, spc) {
+            var c = "";
+            var d = "";
+            if (spc != undefined) {
+                d = spc;
+            }
+            for (var i = 0; i < ary.length - 1; i++) {
+                c+=ary[i]+d;
+            }
+            c+=ary[ary.length - 1];
+            return c;
+        }
+        function outpti(link) {
+            var c = "";
+            if (lineno.img > 0) {c = "-" + lineno.img}
+            lineno.img++;
+            return "<img id=\"imgln-"+(lineno.num+1)+c+"\" src=\""+link+"\">";
+        }
+        function outptv(link, text, loop, btn) {
+            var c = "";
+            if (lineno.vid > 0) {c = "-" + lineno.vid}
+            var x = "&nbsp;";
+            var y = "";
+            var z = "";
+            if (loop == true) {
+                z = " loop";
+            }
+            if (btn == true) {
+                x = "<br><button onclick=\"playvid("+(lineno.num+1)+c+")\").play()\">Play</button>&nbsp;";
+            }
+            if (text != undefined) {
+                y = text;
+            }
+            lineno.vid++;
+            return "<video id=\"vidln-"+(lineno.num+1)+c+"\" src=\""+link+"\""+z+"></video>" + x + y;
+        }
+        function outpta(link, text, loop, btn) {
+            var c = "";
+            if (lineno.aud > 0) {c = "-" + lineno.aud}
+            var x = "&nbsp;";
+            var y = "";
+            var z = "";
+            if (loop == true) {
+                z = " loop";
+            }
+            if (btn == true) {
+                x = "<button onclick=\"playaud("+(lineno.num+1)+c+")\").play()\">Play</button>&nbsp;";
+            }
+            if (text != undefined) {
+                y = text;
+            }
+            lineno.aud++;
+            return "<audio id=\"audln-"+(lineno.num+1)+c+"\" src=\""+link+"\""+z+"></audio>" + x + y;
+        }
+        //Controls
+        //x = Line No.
+        //Image
+        function correctimg(x) {
+            if (document.getElementById("imgln-"+x).clientHeight > document.getElementById("imgln-"+x).clientWidth) {
+                document.getElementById("imgln-"+x).style.height = "60vh";
+                document.getElementById("imgln-"+x).style.width = "auto";
+            } else {
+                document.getElementById("imgln-"+x).style.width = "50vw";
+                document.getElementById("imgln-"+x).style.height = "auto";
+            }
+        }
+        function changesrci(x, y) {
+            document.getElementById("imgln-"+x).src = y;
+        }
+        function imgbordeR(x,y) {
+            document.getElementById("imgln-"+x).style.borderRadius = y;
+        }
+        function bgimg(x) {
+            bdy.style.backgroundImage = x;
+        }
+        function changeIcon(x) {
+            ficon.href = x+"";
+        }
+        //Audio
+        function playaud(x) {
+            document.getElementById("audln-"+x).play();
+        }
+        function pauseaud(x) {
+            document.getElementById("audln-"+x).pause();
+        }
+        function resetaud(x) {
+            document.getElementById("audln-"+x).currentTime = 0;
+        }
+        function settimeaud(x, y) {
+            document.getElementById("audln-"+x).currentTime = y;
+        }
+        function lengthaud(x) {
+            return document.getElementById("audln-"+x).duration;
+        }
+        function changesrca(x, y) {
+            document.getElementById("audln-"+x).src = y;
+        }
+        //Video
+        function playvid(x) {
+            document.getElementById("vidln-"+x).play();
+        }
+        function pausevid(x) {
+            document.getElementById("vidln-"+x).pause();
+        }
+        function resetvid(x) {
+            document.getElementById("vidln-"+x).currentTime = 0;
+        }
+        function settimevid(x, y) {
+            document.getElementById("vidln-"+x).currentTime = y;
+        }
+        function lengthvid(x) {
+            return document.getElementById("vidln-"+x).duration;
+        }
+        function correctvid(x) {
+            if (document.getElementById("vidln-"+x).clientHeight > document.getElementById("vidln-"+x).clientWidth) {
+                document.getElementById("vidln-"+x).style.height = "60vh";
+                document.getElementById("vidln-"+x).style.width = "auto";
+            } else {
+                document.getElementById("vidln-"+x).style.width = "50vw";
+                document.getElementById("vidln-"+x).style.height = "auto";
+            }
+        }
+        function changesrcv(x, y) {
+            document.getElementById("vidln-"+x).src = y;
+        }
+
+        //Reset
+        function resetBox() {
+            lineno = {num:0,img:0,vid:0,aud:0};
+            contnt = [];
+            otptbx.innerHTML = "";
+            updwntxt = {no: lineno.num + 1, store: "", fi: true};
+            textAnim = {array: [null], anims: 0};
+        }
+        function resetAllFormat() {
+            gmst.bodybold = false;
+            gmst.bodyital = false;
+            gmst.bodyundr = false;
+            gmst.inptbold = false;
+            gmst.inptital = false;
+            gmst.inptundr = false;
+            gmst.otptbold = false;
+            gmst.otptital = false;
+            gmst.otptundr = false;
+            bdy.style.fontWeight = "normal";
+            bdy.style.fontStyle = "normal";
+            bdy.style.textDecoration = "none";
+            inptbx.style.fontWeight = "normal";
+            inptbx.style.fontStyle = "normal";
+            inptbx.style.textDecoration = "none";
+            otptbx.style.fontWeight = "normal";
+            otptbx.style.fontStyle = "normal";
+            otptbx.style.textDecoration = "none";
+        }
+        function turnlights() {
+            if (gmst.lights == true) {
+                bdy.style.visibility = "hidden";
+                gmst.input = false;
+                gmst.lights = false;
+            } else {
+                bdy.style.visibility = "visible";
+                gmst.input = true;
+                gmst.lights = true;
+            }
+        }
+        
+        //Text
+        function getInnerText(x) {
+            return document.getElementById("txtln-"+x).innerHTML;
+        }
+        //Changing Text
+        function cinpt(x) {
+            if (x == undefined) {
+                inptbx.innerHTML = "";
+            } else {
+                inptbx.innerHTML = x;
+            }
+        }
+        function ctxt(x, y) {
+            if (x == undefined) {
+                document.getElementById("txtln-"+y).innerHTML = "";
+            } else {
+                document.getElementById("txtln-"+y).innerHTML = x;
+            }
+        }
+        function carw(x, y) {
+            if (x.length == 0) {
+                document.getElementById("arwln-"+y).innerHTML = "&nbsp;&nbsp;&nbsp;";
+            } else if (x.length == 1) {
+                document.getElementById("arwln-"+y).innerHTML = x+"&nbsp;&nbsp;";
+            } else if (x.length == 2) {
+                document.getElementById("arwln-"+y).innerHTML = x+"&nbsp;";
+            } else if (x.length > 2) {
+                document.getElementById("arwln-"+y).innerHTML = x.substring(0, 2)+"&nbsp;";
+            }
+            document.getElementById("txtln-"+y).style.width = "calc(94vw - 12px)";
+        }
+        function inptarw(x) {
+            if (x.length == 0) {
+                document.getElementById("arrow").innerHTML = "&nbsp;";
+            } else if (x.length == 1) {
+                document.getElementById("arrow"+y).innerHTML = x;
+            } else if (x.length > 1) {
+                document.getElementById("arrow-"+y).innerHTML = x.substring(0, 1);
+            }
+        }
+        function rplaceall(x, y, z) {
+            while (x.search(y) >= 0) {
+                x = x.replace(y, z);
+            }
+            return x;
+        }
+        function changeTitle(x) {
+            titl.innerHTML = x+"";
+        }
+        //Color
+        function maincolor(x) {
+            cssvar.style.setProperty('--main', x);
+        }
+        function accentcolor(x) {
+            cssvar.style.setProperty('--accent', x);
+        }
+        function linecolor(x, y) {
+            document.getElementById("line-"+x).style.color = y;
+        }
+        function textcolor(x, y) {
+            document.getElementById("txtln-"+x).style.color = y;
+        }
+        function arrowcolor(x, y) {
+            document.getElementById("areln-"+x).style.color = y;
+        }
+        function iarwcolor(y) {
+            document.getElementById("arrow").style.color = y;
+        }
+        function itxtcolor(y) {
+            document.getElementById("txt").style.color = y;
+        }
+        function cursorolor(y) {
+            document.getElementById("cursor").style.color = y;
+        }
+        function colortext(x, y) {
+            return "<span style=\"color:"+y+"\">"+x+"</span>";
+        }
+        //Fonts
+        function mainfont(x) {
+            bdy.style.fontFamily = x;
+        }
+        function mainfontsize(x) {
+            bdy.style.fontSize = x;
+        }
+        function mainfontbold() {
+            if (gmst.bodybold == false) {
+                bdy.style.fontWeight = "bold";
+                gmst.bodybold = true;
+            } else {
+                bdy.style.fontWeight = "normal";
+                gmst.bodybold = false;
+            }
+        }
+        function mainfontital() {
+            if (gmst.bodyital == false) {
+                bdy.style.fontStyle = "italic";
+                gmst.bodyital = true;
+            } else {
+                bdy.style.fontStyle = "normal";
+                gmst.bodyital = false;
+            }
+        }
+        function mainfontundr() {
+            if (gmst.bodyundr == false) {
+                bdy.style.textDecoration = "underline";
+                gmst.bodyundr = true;
+            } else {
+                bdy.style.textDecoration = "none";
+                gmst.bodyundr = false;
+            }
+        }
+        function inptfont(x) {
+            inptbx.style.fontFamily = x;
+        }
+        function inptfontsize(x) {
+            inptbx.style.fontSize = x;
+        }
+        function inptfontbold() {
+            if (gmst.inptbold == false) {
+                inptbx.style.fontWeight = "bold";
+                gmst.inptbold = true;
+            } else {
+                inptbx.style.fontWeight = "normal";
+                gmst.inptbold = false;
+            }
+        }
+        function inptfontital() {
+            if (gmst.inptital == false) {
+                inptbx.style.fontStyle = "italic";
+                gmst.inptital = true;
+            } else {
+                inptbx.style.fontStyle = "normal";
+                gmst.inptital = false;
+            }
+        }
+        function inptfontundr() {
+            if (gmst.inptundr == false) {
+                inptbx.style.textDecoration = "underline";
+                gmst.inptundr = true;
+            } else {
+                inptbx.style.textDecoration = "none";
+                gmst.inptundr = false;
+            }
+        }
+        function otptfont(x) {
+            otptbx.style.fontFamily = x;
+        }
+        function otptfontsize(x) {
+            otptbx.style.fontSize = x;
+        }
+        function otptfontbold() {
+            if (gmst.otptbold == false) {
+                otptbx.style.fontWeight = "bold";
+                gmst.otptbold = true;
+            } else {
+                otptbx.style.fontWeight = "normal";
+                gmst.otptbold = false;
+            }
+        }
+        function otptfontital() {
+            if (gmst.otptital == false) {
+                otptbx.style.fontStyle = "italic";
+                gmst.otptital = true;
+            } else {
+                otptbx.style.fontStyle = "normal";
+                gmst.otptital = false;
+            }
+        }
+        function otptfontundr() {
+            if (gmst.otptundr == false) {
+                otptbx.style.textDecoration = "underline";
+                gmst.otptundr = true;
+            } else {
+                otptbx.style.textDecoration = "none";
+                gmst.otptundr = false;
+            }
+        }
+        function itxlnfont(x, y) {
+            document.getElementById("line-"+y).style.fontFamily = x;
+        }
+        function itxlnfontsize(x, y) {
+            document.getElementById("line-"+y).style.fontSize = x;
+        }
+        function itxlnfontbold(y) {
+            document.getElementById("line-"+y).style.fontWeight = "bold";
+        }
+        function itxlnfontital(y) {
+            document.getElementById("line-"+y).style.fontStyle = "italic";
+        }
+        function itxlnfontundr(y) {
+            document.getElementById("line-"+y).style.textDecoration = "underline";
+        }
+        function txlnfont(x, y) {
+            document.getElementById("txtln-"+y).style.fontFamily = x;
+        }
+        function txlnfontsize(x, y) {
+            document.getElementById("txtln-"+y).style.fontSize = x;
+        }
+        function txlnfontbold(y) {
+            document.getElementById("txtln-"+y).style.fontWeight = "bold";
+        }
+        function txlnfontital(y) {
+            document.getElementById("txtln-"+y).style.fontStyle = "italic";
+        }
+        function txlnfontundr(y) {
+            document.getElementById("txtln-"+y).style.textDecoration = "underline";
+        }
+        function arlnfont(x, y) {
+            document.getElementById("arwln-"+y).style.fontFamily = x;
+        }
+        function arlnfontsize(x, y) {
+            document.getElementById("arwln-"+y).style.fontSize = x;
+        }
+        function arlnfontbold(y) {
+            document.getElementById("arwln-"+y).style.fontWeight = "bold";
+        }
+        function arlnfontital(y) {
+            document.getElementById("arwln-"+y).style.fontStyle = "italic";
+        }
+        function arlnfontundr(y) {
+            document.getElementById("arwln-"+y).style.textDecoration = "underline";
+        }
+        function boldtext (x) {
+            return "<span style=\"font-weight:bold\">"+x+"</span>";
+        }
+        function italtext (x) {
+            return "<span style=\"font-style:italic\">"+x+"</span>";
+        }
+        function undrtext (x) {
+            return "<span style=\"text-decoration:underline\">"+x+"</span>";
+        }
+        //&nbsp; and Spaces
+        function rmvspace(x) {
+            while (x.search(" ") >= 0) {
+                x = x.replace(" ", "");
+            }
+            return x;
+        }
+        function rmvespace(x) {
+            var c = "";
+            var sp = false;
+            var spi = true;
+            for (var i = 1; i <= x.length; i++) {
+                if (x.substring(i - 1, i) == " ") {
+                    if (sp == true) {spi = false;}
+                    sp = true;
+                } else {
+                    sp = false;
+                    spi = true;
+                }
+                if (spi == true) {c+=x.substring(i - 1, i);}
+            }
+            return c;
+        } 
+        function rmvnbsp(x) {
+            while (x.search("&nbsp;") >= 0) {
+                x = x.replace("&nbsp;", "");
+            }
+            return x;
+        }
+        function rmvenbsp(x) {
+            var b = x;
+            while (b.search("&nbsp;") >= 0) {
+                b = b.replace("&nbsp;", "‍");
+            }
+            var c = "";
+            var sp = false;
+            var spi = true;
+            for (var i = 1; i <= b.length; i++) {
+                if (b.substring(i - 1, i) == "‍") {
+                    if (sp == true) {spi = false;}
+                    sp = true;
+                } else {
+                    sp = false;
+                    spi = true;
+                }
+                if (spi == true) {c+=b.substring(i - 1, i);}
+            }
+            b = c;
+            while (b.search("‍") >= 0) {
+                b = b.replace("‍", "&nbsp;");
+            }
+            return b;
+        }
+        function nbspspc(x) {
+            while (x.search("&nbsp;") >= 0) {
+                x = x.replace("&nbsp;", " ");
+            }
+            return x;
+        }
+        function spcnbsp(x) {
+            while (x.search(" ") >= 0) {
+                x = x.replace(" ", "&nbsp;");
+            }
+            return x;
+        }
+        
+        //Key Press
+        document.addEventListener('keydown', (event) => {
+            keysPressed[event.key] = true;
+        });
+        document.addEventListener('keyup', (event) => {
+            delete keysPressed[event.key];
+        });
+        $(window).blur(function(){
+            keysPressed = {};
+        });
+        document.addEventListener('keydown', (event) => {
+            if (keysPressed["Control"] || keysPressed["Alt"]) {
+                if (keysPressed["Control"] && event.keyCode == 8) {
+                    cinpt();
+                }
+            } else if (keysPressed["Shift"]) {
+                if (gmst.input == true) {
+                    crsrstate = true;
+                    switch (event.keyCode){
+                        case 13:
+                            if (gmst.enterblank == false) {
+                                if (nbspspc(inptbx.innerHTML).trim() != "") {
+                                    ears(inptbx.innerHTML);
+                                    pEnter();
+                                }
+                            } else {
+                                ears(inptbx.innerHTML);
+                                pEnter();
+                            }
+                            break;
+                        case 48:
+                            inptbx.innerHTML+=")";
+                            break;
+                        case 49:
+                            inptbx.innerHTML+="!";
+                            break;
+                        case 50:
+                            inptbx.innerHTML+="@";
+                            break;
+                        case 51:
+                            inptbx.innerHTML+="#";
+                            break;
+                        case 52:
+                            inptbx.innerHTML+="$";
+                            break;
+                        case 53:
+                            inptbx.innerHTML+="%";
+                            break;
+                        case 54:
+                            inptbx.innerHTML+="^";
+                            break;
+                        case 55:
+                            inptbx.innerHTML+="&";
+                            break;
+                        case 56:
+                            inptbx.innerHTML+="*";
+                            break;
+                        case 57:
+                            inptbx.innerHTML+="(";
+                            break;
+                        case 65:
+                            inptbx.innerHTML+="A";
+                            break;
+                        case 66:
+                            inptbx.innerHTML+="B";
+                            break;
+                        case 67:
+                            inptbx.innerHTML+="C";
+                            break;
+                        case 68:
+                            inptbx.innerHTML+="D";
+                            break;
+                        case 69:
+                            inptbx.innerHTML+="E";
+                            break;
+                        case 70:
+                            inptbx.innerHTML+="F";
+                            break;
+                        case 71:
+                            inptbx.innerHTML+="G";
+                            break;
+                        case 72:
+                            inptbx.innerHTML+="H";
+                            break;
+                        case 73:
+                            inptbx.innerHTML+="I";
+                            break;
+                        case 74:
+                            inptbx.innerHTML+="J";
+                            break;
+                        case 75:
+                            inptbx.innerHTML+="K";
+                            break;
+                        case 76:
+                            inptbx.innerHTML+="L";
+                            break;
+                        case 77:
+                            inptbx.innerHTML+="M";
+                            break;
+                        case 78:
+                            inptbx.innerHTML+="N";
+                            break;
+                        case 79:
+                            inptbx.innerHTML+="O";
+                            break;
+                        case 80:
+                            inptbx.innerHTML+="P";
+                            break;
+                        case 81:
+                            inptbx.innerHTML+="Q";
+                            break;
+                        case 82:
+                            inptbx.innerHTML+="R";
+                            break;
+                        case 83:
+                            inptbx.innerHTML+="S";
+                            break;
+                        case 84:
+                            inptbx.innerHTML+="T";
+                            break;
+                        case 85:
+                            inptbx.innerHTML+="U";
+                            break;
+                        case 86:
+                            inptbx.innerHTML+="V";
+                            break;
+                        case 87:
+                            inptbx.innerHTML+="W";
+                            break;
+                        case 88:
+                            inptbx.innerHTML+="X";
+                            break;
+                        case 89:
+                            inptbx.innerHTML+="Y";
+                            break;
+                        case 90:
+                            inptbx.innerHTML+="Z";
+                            break;
+                        case 32:
+                            inptbx.innerHTML+="&nbsp;";
+                            break;
+                        case 188:
+                            inptbx.innerHTML+="<";
+                            break;
+                        case 190:
+                            inptbx.innerHTML+=">";
+                            break;
+                        case 191:
+                            inptbx.innerHTML+="?";
+                            break;
+                        case 186:
+                            inptbx.innerHTML+=":";
+                            break;
+                        case 222:
+                            inptbx.innerHTML+="\"";
+                            break;
+                        case 219:
+                            inptbx.innerHTML+="{";
+                            break;
+                        case 221:
+                            inptbx.innerHTML+="}";
+                            break;
+                        case 220:
+                            inptbx.innerHTML+="|";
+                            break;
+                        case 189:
+                            inptbx.innerHTML+="_";
+                            break;
+                        case 187:
+                            inptbx.innerHTML+="+";
+                            break;
+                        case 192:
+                            inptbx.innerHTML+="~";
+                            break;
+                        case 38:
+                            arrowtxt(true);
+                            break;
+                        case 40:
+                            arrowtxt(false);
+                            break;
+                        case 8:
+                            if (inptbx.innerHTML.length >= 1) {
+                                inptbx.innerHTML=inptbx.innerHTML.substring(0, inptbx.innerHTML.length - 1);
+                            }
+                    }
+                }
+            } else {
+                crsrstate = true;
+                if (gmst.input == true) {
+                    switch (event.keyCode){
+                        case 13:
+                            if (gmst.enterblank == false) {
+                                if (nbspspc(inptbx.innerHTML).trim() != "") {
+                                    ears(inptbx.innerHTML);
+                                    pEnter();
+                                }
+                            } else {
+                                ears(inptbx.innerHTML);
+                                pEnter();
+                            }
+                            break;
+                        case 48:
+                            inptbx.innerHTML+="0";
+                            break;
+                        case 49:
+                            inptbx.innerHTML+="1";
+                            break;
+                        case 50:
+                            inptbx.innerHTML+="2";
+                            break;
+                        case 51:
+                            inptbx.innerHTML+="3";
+                            break;
+                        case 52:
+                            inptbx.innerHTML+="4";
+                            break;
+                        case 53:
+                            inptbx.innerHTML+="5";
+                            break;
+                        case 54:
+                            inptbx.innerHTML+="6";
+                            break;
+                        case 55:
+                            inptbx.innerHTML+="7";
+                            break;
+                        case 56:
+                            inptbx.innerHTML+="8";
+                            break;
+                        case 57:
+                            inptbx.innerHTML+="9";
+                            break;
+                        case 65:
+                            inptbx.innerHTML+="a";
+                            break;
+                        case 66:
+                            inptbx.innerHTML+="b";
+                            break;
+                        case 67:
+                            inptbx.innerHTML+="c";
+                            break;
+                        case 68:
+                            inptbx.innerHTML+="d";
+                            break;
+                        case 69:
+                            inptbx.innerHTML+="e";
+                            break;
+                        case 70:
+                            inptbx.innerHTML+="f";
+                            break;
+                        case 71:
+                            inptbx.innerHTML+="g";
+                            break;
+                        case 72:
+                            inptbx.innerHTML+="h";
+                            break;
+                        case 73:
+                            inptbx.innerHTML+="i";
+                            break;
+                        case 74:
+                            inptbx.innerHTML+="j";
+                            break;
+                        case 75:
+                            inptbx.innerHTML+="k";
+                            break;
+                        case 76:
+                            inptbx.innerHTML+="l";
+                            break;
+                        case 77:
+                            inptbx.innerHTML+="m";
+                            break;
+                        case 78:
+                            inptbx.innerHTML+="n";
+                            break;
+                        case 79:
+                            inptbx.innerHTML+="o";
+                            break;
+                        case 80:
+                            inptbx.innerHTML+="p";
+                            break;
+                        case 81:
+                            inptbx.innerHTML+="q";
+                            break;
+                        case 82:
+                            inptbx.innerHTML+="r";
+                            break;
+                        case 83:
+                            inptbx.innerHTML+="s";
+                            break;
+                        case 84:
+                            inptbx.innerHTML+="t";
+                            break;
+                        case 85:
+                            inptbx.innerHTML+="u";
+                            break;
+                        case 86:
+                            inptbx.innerHTML+="v";
+                            break;
+                        case 87:
+                            inptbx.innerHTML+="w";
+                            break;
+                        case 88:
+                            inptbx.innerHTML+="x";
+                            break;
+                        case 89:
+                            inptbx.innerHTML+="y";
+                            break;
+                        case 90:
+                            inptbx.innerHTML+="z";
+                            break;
+                        case 32:
+                            inptbx.innerHTML+="&nbsp;";
+                            break;
+                        case 188:
+                            inptbx.innerHTML+=",";
+                            break;
+                        case 190:
+                            inptbx.innerHTML+=".";
+                            break;
+                        case 191:
+                            inptbx.innerHTML+="/";
+                            break;
+                        case 186:
+                            inptbx.innerHTML+=";";
+                            break;
+                        case 222:
+                            inptbx.innerHTML+="'";
+                            break;
+                        case 219:
+                            inptbx.innerHTML+="[";
+                            break;
+                        case 221:
+                            inptbx.innerHTML+="]";
+                            break;
+                        case 220:
+                            inptbx.innerHTML+="\\";
+                            break;
+                        case 189:
+                            inptbx.innerHTML+="-";
+                            break;
+                        case 187:
+                            inptbx.innerHTML+="=";
+                            break;
+                        case 192:
+                            inptbx.innerHTML+="`";
+                            break;
+                        case 38:
+                            arrowtxt(true);
+                            break;
+                        case 40:
+                            arrowtxt(false);
+                            break;
+                        case 8:
+                            if (inptbx.innerHTML.length >= 1) {inptbx.innerHTML=inptbx.innerHTML.substring(0, inptbx.innerHTML.length - 1)}
+                    }
+                }
+            }   
+            if (gmst.eyesopen == true) {eyes(inptbx.innerHTML)}
+            if (document.getElementById("textbox").clientHeight >= window.innerHeight * 0.48) {document.getElementById("textbox").scrollTop = document.getElementById("textbox").scrollHeight;}
+        });
+        $(window).resize(function() {
+            document.getElementById("outptbx").style.height = "calc(100vh - "+document.getElementById("textbox").clientHeight+"px - 12px)";
+        });
+        function arrowtxt(up) {    
+            if (up == true) {
+                updwntxt.no--;
+            } else {
+                updwntxt.no++;
+            }
+            if (updwntxt.no <= 0) {updwntxt.no = 1}
+            if (updwntxt.no > lineno.num + 1) {updwntxt.no = lineno.num + 1}
+            if (updwntxt.no < lineno.num + 1) {
+                if (updwntxt.fi == true) {
+                    updwntxt.fi = false;
+                    updwntxt.store = inptbx.innerHTML;
+                }
+                cinpt(getInnerText(updwntxt.no));
+            } else {
+                if (updwntxt.fi == false) {
+                    updwntxt.fi = true;
+                    cinpt(updwntxt.store);
+                    updwntxt.store = "";
+                } 
+            }
+        }
+
+        //Blinking Cursor
+        function cursor() {
+            if (crsrstate == true){
+                if (gmst.cursor == -1) {
+                    if (loadedst == false) {
+                        loadedst = true;
+                        if (gmst.loadlock == true) {
+                            if (gmst.input == true) {
+                                gmst.input = false;
+                            }
+                        }
+                    }
+                    if (loadstate == 0) {
+                        pntr.innerHTML = ".";
+                    } else if (loadstate == 1) {
+                        pntr.innerHTML = "..";
+                    } else if (loadstate == 2) {
+                        pntr.innerHTML = "...";
+                    } else if (loadstate == 3) {
+                        pntr.innerHTML = "&nbsp;";
+                    }
+                    loadstate++;
+                    if (loadstate >= 4) {
+                        loadstate = 0;
+                    }
+                } else if (gmst.cursor == -2) {
+                    if (loadedst == false) {
+                        loadedst = true;
+                        if (gmst.loadlock == true) {
+                            if (gmst.input == true) {
+                                gmst.input = false;
+                            }
+                        }
+                    }
+                    if (loadstate == 0) {
+                        pntr.innerHTML = "|";
+                    } else if (loadstate == 1) {
+                        pntr.innerHTML = "/";
+                    } else if (loadstate == 2) {
+                        pntr.innerHTML = "-";
+                    } else if (loadstate == 3) {
+                        pntr.innerHTML = "\\";
+                    }
+                    loadstate++;
+                    if (loadstate >= 4) {
+                        loadstate = 0;
+                    }
+                } else {
+                    if (loadedst == true) {
+                        loadedst = false;
+                        loadstate = 0;
+                        if (gmst.loadlock == true) {
+                            if (gmst.input == false) {
+                                gmst.input = true;
+                            }
+                        }
+                    }
+                    if (gmst.cursor == 0) {
+                        pntr.innerHTML = "&nbsp;";
+                        crsrstate = false;
+                    } else if (gmst.cursor == 1) {
+                        pntr.innerHTML = "|";
+                        crsrstate = false;
+                    } else if (gmst.cursor == 2) {
+                        pntr.innerHTML = "_";
+                        crsrstate = false;
+                    } else if (gmst.cursor == 3) {
+                        pntr.innerHTML = "█";
+                        crsrstate = false;
+                    } else if (gmst.cursor == "c") {
+                        pntr.innerHTML = customcursor.on;
+                        crsrstate = false;
+                    }
+                }
+            }else{
+                if (gmst.cursor == "c") {
+                        pntr.innerHTML = customcursor.off;
+                } else {pntr.innerHTML = "&nbsp;";}
+                crsrstate = true;
+            }
+            setTimeout(() => { cursor() }, gmst.cursorRate);
+        }
+        cursor();
+
+        //Input Detection
+        function ears(x) {
+        }
+        function eyes(x) {
+        }
+    
+        //Game
+        function dice(x) {
+            return Math.ceil(Math.random() * x);
+        }
+    </script>
+</body>
+</html>
