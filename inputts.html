@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <!--v1.1.1-->
     <title id="title">Adventure</title>
     <link rel="icon" href="" id="icon">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -922,9 +923,11 @@
                             arrowtxt(false);
                             break;
                         case 8:
+                            inptbx.innerHTML = nbspspc(inptbx.innerHTML);
                             if (inptbx.innerHTML.length >= 1) {
                                 inptbx.innerHTML=inptbx.innerHTML.substring(0, inptbx.innerHTML.length - 1);
                             }
+                            inptbx.innerHTML = spcnbsp(inptbx.innerHTML);
                     }
                 }
             } else {
@@ -1082,7 +1085,11 @@
                             arrowtxt(false);
                             break;
                         case 8:
-                            if (inptbx.innerHTML.length >= 1) {inptbx.innerHTML=inptbx.innerHTML.substring(0, inptbx.innerHTML.length - 1)}
+                            inptbx.innerHTML = nbspspc(inptbx.innerHTML);
+                            if (inptbx.innerHTML.length >= 1) {
+                                inptbx.innerHTML=inptbx.innerHTML.substring(0, inptbx.innerHTML.length - 1);
+                            }
+                            inptbx.innerHTML = spcnbsp(inptbx.innerHTML);
                     }
                 }
             }   
