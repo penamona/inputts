@@ -56,6 +56,17 @@
         var loadstate = 0;
         var loadedst = false;
         var customcursor = {on:"&nbsp;",off:"&nbsp;"};
+        var systemstyle = {
+            bodybold: false,
+            bodyital: false,
+            bodyundr: false,
+            inptbold: false,
+            inptital: false,
+            inptundr: false,
+            otptbold: false,
+            otptital: false,
+            otptundr: false,
+        };
         //States
         var gmst = {
             input: true,
@@ -68,16 +79,7 @@
             pOutpt: 1,
             cursor: 1,
             cursorRate: 300,
-            bodybold: false,
-            bodyital: false,
-            bodyundr: false,
-            inptbold: false,
-            inptital: false,
-            inptundr: false,
-            otptbold: false,
-            otptital: false,
-            otptundr: false,
-        }
+        };
 
         //Body On Load
         function loaded() {
@@ -409,15 +411,15 @@
             resetAnim();
         }
         function resetAllFormat() {
-            gmst.bodybold = false;
-            gmst.bodyital = false;
-            gmst.bodyundr = false;
-            gmst.inptbold = false;
-            gmst.inptital = false;
-            gmst.inptundr = false;
-            gmst.otptbold = false;
-            gmst.otptital = false;
-            gmst.otptundr = false;
+            systemstyle.bodybold = false;
+            systemstyle.bodyital = false;
+            systemstyle.bodyundr = false;
+            systemstyle.inptbold = false;
+            systemstyle.inptital = false;
+            systemstyle.inptundr = false;
+            systemstyle.otptbold = false;
+            systemstyle.otptital = false;
+            systemstyle.otptundr = false;
             bdy.style.fontWeight = "normal";
             bdy.style.fontStyle = "normal";
             bdy.style.textDecoration = "none";
@@ -528,30 +530,30 @@
             bdy.style.fontSize = x;
         }
         function mainfontbold() {
-            if (gmst.bodybold == false) {
+            if (systemstyle.bodybold == false) {
                 bdy.style.fontWeight = "bold";
-                gmst.bodybold = true;
+                systemstyle.bodybold = true;
             } else {
                 bdy.style.fontWeight = "normal";
-                gmst.bodybold = false;
+                systemstyle.bodybold = false;
             }
         }
         function mainfontital() {
-            if (gmst.bodyital == false) {
+            if (systemstyle.bodyital == false) {
                 bdy.style.fontStyle = "italic";
-                gmst.bodyital = true;
+                systemstyle.bodyital = true;
             } else {
                 bdy.style.fontStyle = "normal";
-                gmst.bodyital = false;
+                systemstyle.bodyital = false;
             }
         }
         function mainfontundr() {
-            if (gmst.bodyundr == false) {
+            if (systemstyle.bodyundr == false) {
                 bdy.style.textDecoration = "underline";
-                gmst.bodyundr = true;
+                systemstyle.bodyundr = true;
             } else {
                 bdy.style.textDecoration = "none";
-                gmst.bodyundr = false;
+                systemstyle.bodyundr = false;
             }
         }
         function inptfont(x) {
@@ -561,30 +563,30 @@
             inptbx.style.fontSize = x;
         }
         function inptfontbold() {
-            if (gmst.inptbold == false) {
+            if (systemstyle.inptbold == false) {
                 inptbx.style.fontWeight = "bold";
-                gmst.inptbold = true;
+                systemstyle.inptbold = true;
             } else {
                 inptbx.style.fontWeight = "normal";
-                gmst.inptbold = false;
+                systemstyle.inptbold = false;
             }
         }
         function inptfontital() {
-            if (gmst.inptital == false) {
+            if (systemstyle.inptital == false) {
                 inptbx.style.fontStyle = "italic";
-                gmst.inptital = true;
+                systemstyle.inptital = true;
             } else {
                 inptbx.style.fontStyle = "normal";
-                gmst.inptital = false;
+                systemstyle.inptital = false;
             }
         }
         function inptfontundr() {
-            if (gmst.inptundr == false) {
+            if (systemstyle.inptundr == false) {
                 inptbx.style.textDecoration = "underline";
-                gmst.inptundr = true;
+                systemstyle.inptundr = true;
             } else {
                 inptbx.style.textDecoration = "none";
-                gmst.inptundr = false;
+                systemstyle.inptundr = false;
             }
         }
         function otptfont(x) {
@@ -594,30 +596,30 @@
             otptbx.style.fontSize = x;
         }
         function otptfontbold() {
-            if (gmst.otptbold == false) {
+            if (systemstyle.otptbold == false) {
                 otptbx.style.fontWeight = "bold";
-                gmst.otptbold = true;
+                systemstyle.otptbold = true;
             } else {
                 otptbx.style.fontWeight = "normal";
-                gmst.otptbold = false;
+                systemstyle.otptbold = false;
             }
         }
         function otptfontital() {
-            if (gmst.otptital == false) {
+            if (systemstyle.otptital == false) {
                 otptbx.style.fontStyle = "italic";
-                gmst.otptital = true;
+                systemstyle.otptital = true;
             } else {
                 otptbx.style.fontStyle = "normal";
-                gmst.otptital = false;
+                systemstyle.otptital = false;
             }
         }
         function otptfontundr() {
-            if (gmst.otptundr == false) {
+            if (systemstyle.otptundr == false) {
                 otptbx.style.textDecoration = "underline";
-                gmst.otptundr = true;
+                systemstyle.otptundr = true;
             } else {
                 otptbx.style.textDecoration = "none";
-                gmst.otptundr = false;
+                systemstyle.otptundr = false;
             }
         }
         function itxlnfont(x, y) {
@@ -755,21 +757,20 @@
                 if (keysPressed["Control"] && event.keyCode == 8) {
                     cinpt();
                 }
+            } else if (event.keyCode == 13) {
+                if (gmst.enterblank == false) {
+                    if (nbspspc(inptbx.innerHTML).trim() != "") {
+                        ears(inptbx.innerHTML);
+                        pEnter();
+                    }
+                } else {
+                    ears(inptbx.innerHTML);
+                    pEnter();
+                }
             } else if (keysPressed["Shift"]) {
                 if (gmst.input == true) {
                     crsrstate = true;
                     switch (event.keyCode){
-                        case 13:
-                            if (gmst.enterblank == false) {
-                                if (nbspspc(inptbx.innerHTML).trim() != "") {
-                                    ears(inptbx.innerHTML);
-                                    pEnter();
-                                }
-                            } else {
-                                ears(inptbx.innerHTML);
-                                pEnter();
-                            }
-                            break;
                         case 48:
                             inptbx.innerHTML+=")";
                             break;
@@ -930,17 +931,6 @@
                 crsrstate = true;
                 if (gmst.input == true) {
                     switch (event.keyCode){
-                        case 13:
-                            if (gmst.enterblank == false) {
-                                if (nbspspc(inptbx.innerHTML).trim() != "") {
-                                    ears(inptbx.innerHTML);
-                                    pEnter();
-                                }
-                            } else {
-                                ears(inptbx.innerHTML);
-                                pEnter();
-                            }
-                            break;
                         case 48:
                             inptbx.innerHTML+="0";
                             break;
